@@ -2,36 +2,33 @@
 
 session_start();
 
-if(!isset($_SESSION['sessionid'])|| $_SESSION['sessionid']!= session_id()){
-  header("Location: deconnect.php");
+if (!isset($_SESSION['sessionid']) || $_SESSION['sessionid'] != session_id()) {
+    header("Location: deconnect.php");
 }
 
 require_once 'connect.php';
 
-    
+
 // requête qui insert le commentaire dans le db
+
+/* pdo */
 $sql = "SELECT l.lemess, l.ladate, u.lelogin, u.avatar FROM lepost l
 	INNER JOIN utilisateur u ON l.utilisateur_id = u.id
         ORDER BY l.ladate DESC
         LIMIT $nb_messages_tchat;";
-    
+
 // exécution de la requête
-$req = mysqli_query($mysqli,$sql) or die(mysqli_error($mysqli));
+/* pdo */
+$req=$connection->query($sql);
 
-// récupération de toutes les lignes dans un tableau associatif
-// $recup = mysqli_fetch_all($req);
-// ne fonctionne pas sur ovh
-
-$recup = array();
-while($ligne = mysqli_fetch_array($req)){
-    $recup[]=$ligne;
-}
+/* PDO */
+/* récup en tableau indexé*/
+$recup = $req->fetchALL(PDO::FETCH_NUM);
 
 // on trie le contenu du tableau par les clefs par ordre descendant
 krsort($recup);
 
 // var_dump($recup);
-
 // création de la variable de sortie de type text
 $sortie = "";
 
@@ -43,14 +40,14 @@ $sortie = "";
  */
 foreach ($recup as $key => $value) {
     $sortie .= "<div id='txt$key' class='lepost'>";
-    $sortie .= "<div class='message'><img class='icon-recup' src='".PATH.$value[3]."' title='".$value[2]."' alt='".$value[2]."' /></div>";
+    $sortie .= "<div class='message'><img class='icon-recup' src='" . PATH . $value[3] . "' title='" . $value[2] . "' alt='" . $value[2] . "' /></div>";
     $sortie .="<div class='msg-1'>";
-    $sortie .= "<span class='login'>".ucfirst($value[2])."</span><br /><span class='ladate'>".$value[1]."</span>";
-    $sortie .= "<p>".html_entity_decode($value[0])."</p>";
-	$sortie .= "<i></i>";
+    $sortie .= "<span class='login'>" . ucfirst($value[2]) . "</span><br /><span class='ladate'>" . $value[1] . "</span>";
+    $sortie .= "<p>" . html_entity_decode($value[0]) . "</p>";
+    $sortie .= "<i></i>";
     $sortie .= "</div>";
     $sortie .= "</div>";
-	$sortie .="<div class='clear'></div>";
+    $sortie .="<div class='clear'></div>";
 }
 echo $sortie;
 

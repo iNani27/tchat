@@ -8,8 +8,8 @@ require_once 'connect.php';
 
 // on va vérifier le nombre de lignes dans la db
 $sql = "SELECT COUNT(*) AS nombre FROM lepost;";
-$req = mysqli_query($mysqli, $sql) or die (mysqli_error($mysqli));
-$fetch = mysqli_fetch_assoc($req);
+$req = $connection->query($sql);
+$fetch = $req->fetch(PDO::FETCH_ASSOC);
 $nombre = $fetch['nombre'];
 
 // si la variable de session qui contient le nombre de lignes dans la db n'existe pas
